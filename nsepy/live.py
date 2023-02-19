@@ -4,36 +4,40 @@ Created on Fri Dec 18 21:51:41 2015
 
 @author: SW274998
 """
-import pdb
-import dateutil.relativedelta
-from nsepy.commons import *
-import ast
 import json
-import io
-import pandas as pd
-from bs4 import BeautifulSoup
-import pkg_resources
-from nsepy.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url, holiday_list_url
 
+import dateutil.relativedelta
+import pandas as pd
+import pkg_resources
+from bs4 import BeautifulSoup
+
+from nsepy.commons import *
+from nsepy.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url
 
 OPTIONS_CHAIN_SCHEMA = [str, int, int, int, float, float, float, int, float, float, int,
                         float,
                         int, float, float, int, float, float, float, int, int, int, str]
-OPTIONS_CHAIN_HEADERS = ["Call Chart", "Call OI", "Call Chng in OI", "Call Volume", "Call IV", "Call LTP", "Call Net Chng", "Call Bid Qty", "Call Bid Price", "Call Ask Price", "Call Ask Qty",
+OPTIONS_CHAIN_HEADERS = ["Call Chart", "Call OI", "Call Chng in OI", "Call Volume", "Call IV", "Call LTP",
+                         "Call Net Chng", "Call Bid Qty", "Call Bid Price", "Call Ask Price", "Call Ask Qty",
                          "Strike Price",
-                         "Put Bid Qty", "Put Bid Price", "Put Ask Price", "Put Ask Qty", "Put Net Chng", "Put LTP", "Put IV", "Put Volume", "Put Chng in OI", "Put OI", "Put Chart"]
+                         "Put Bid Qty", "Put Bid Price", "Put Ask Price", "Put Ask Qty", "Put Net Chng", "Put LTP",
+                         "Put IV", "Put Volume", "Put Chng in OI", "Put OI", "Put Chart"]
 OPTIONS_CHAIN_INDEX = "Strike Price"
 
 FUTURES_SCHEMA = [str, str, StrDate.default_format(
     format="%d%b%Y"), str, str, float, float, float, float, float, int, float, float]
-FUTURES_HEADERS = ["Instrument", "Underlying", "Expiry Date", "Option Type", "Strike Price", "Open Price", "High Price", "Low Price", "Prev. Close", "Last Price", "Volume",
+FUTURES_HEADERS = ["Instrument", "Underlying", "Expiry Date", "Option Type", "Strike Price", "Open Price", "High Price",
+                   "Low Price", "Prev. Close", "Last Price", "Volume",
                    "Turnover", "Underlying Value"]
 FUTURES_INDEX = "Expiry Date"
 
-
-eq_quote_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol={}&illiquid=0&smeFlag=0&itpFlag=0"
-derivative_quote_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuoteFO.jsp?underlying={}&instrument={}&expiry={}&type={}&strike={}"
-option_chain_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/option_chain/optionKeys.jsp?symbolCode=-9999&symbol=NIFTY&symbol=BANKNIFTY&instrument=OPTIDX&date=-&segmentLink=17&segmentLink=17"
+eq_quote_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol={" \
+                   "}&illiquid=0&smeFlag=0&itpFlag=0 "
+derivative_quote_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuoteFO.jsp" \
+                           "?underlying={}&instrument={}&expiry={}&type={}&strike={} "
+option_chain_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/option_chain/optionKeys.jsp" \
+                       "?symbolCode=-9999&symbol=NIFTY&symbol=BANKNIFTY&instrument=OPTIDX&date=-&segmentLink=17" \
+                       "&segmentLink=17 "
 
 
 def get_quote(symbol, series='EQ', instrument=None, expiry=None, option_type=None, strike=None):
@@ -60,7 +64,7 @@ def get_quote(symbol, series='EQ', instrument=None, expiry=None, option_type=Non
     html_soup = BeautifulSoup(res.text, 'lxml')
     hresponseDiv = html_soup.find("div", {"id": "responseDiv"})
     d = json.loads(hresponseDiv.get_text())
-    #d = json.loads(res.text)['data'][0]
+    # d = json.loads(res.text)['data'][0]
     res = {}
     for k in d.keys():
         v = d[k]
@@ -77,7 +81,6 @@ def get_quote(symbol, series='EQ', instrument=None, expiry=None, option_type=Non
 
 
 def get_option_chain(symbol, instrument=None, expiry=None):
-
     if expiry:
         expiry_str = "%02d%s%d" % (
             expiry.day, months[expiry.month][0:3].upper(), expiry.year)
@@ -130,16 +133,16 @@ def get_holidays_list(fromDate,
         raise ValueError('Please check start and end dates')
 
     # holidayscrape = holiday_list_url(fromDate.strftime(
-        # "%d-%m-%Y"), toDate.strftime("%d-%m-%Y"))
+    # "%d-%m-%Y"), toDate.strftime("%d-%m-%Y"))
     # html_soup = BeautifulSoup(holidayscrape.text, 'lxml')
     # sptable = html_soup.find("table")
     # tp = ParseTables(soup=sptable,
-                     # schema=[str, StrDate.default_format(
-                         # format="%d-%b-%Y"), str, str],
-                     # headers=["Market Segment", "Date", "Day", "Description"], index="Date")
+    # schema=[str, StrDate.default_format(
+    # format="%d-%b-%Y"), str, str],
+    # headers=["Market Segment", "Date", "Day", "Description"], index="Date")
     # dfret = tp.get_df()
     strmholiday = pkg_resources.resource_stream(__name__, 'resources/holiday.csv')
-    dfdata = pd.read_csv(strmholiday,parse_dates=['Date'])
+    dfdata = pd.read_csv(strmholiday, parse_dates=['Date'])
     dfret = dfdata.drop(["Market Segment"], axis=1)
     dfret['Date'] = dfret['Date'].dt.date
     dfret = dfret.set_index('Date')
@@ -194,6 +197,7 @@ def previousworkingday(dt):
         if isworkingday(dttmp):
             return dttmp
 
+
 def nearestworkingday(dt):
     """This is the function to get nearest working day.
         Args:
@@ -201,11 +205,11 @@ def nearestworkingday(dt):
         Returns:
             dt (datetime.date): Nearest working day on or before the given date
     """
-    if isworkingday (dt):
-      return dt
+    if isworkingday(dt):
+        return dt
     else:
-      return previousworkingday(dt)
-    
+        return previousworkingday(dt)
+
 
 def getworkingdays(dtfrom, dtto):
     # pdb.set_trace()
@@ -221,23 +225,20 @@ def getworkingdays(dtfrom, dtto):
             stweekends.add(dt)
 
     # pdb.set_trace()
-    stspecial  = set(
-      [datetime.date(2020,2,1) # Budget day
-      ]
-    )
+    stspecial = {datetime.date(2020, 2, 1)}
 
-    #Remove special weekend working days from weekends set
+    # Remove special weekend working days from weekends set
     stweekends -= stspecial
     stworking = (stalldays - stweekends) - set(dfholiday.index.values)
     # stworking = (stalldays - stweekends) - set(dfholiday.index.values)
 
     # #Special cases where market was open on weekends
     # stspecial  = set(
-      # [datetime.date(2020,2,1) # Budget day
-      # ]
+    # [datetime.date(2020,2,1) # Budget day
+    # ]
     # )
     # for dtspecial in stspecial:
-      # if (dtspecial >= dtfrom and dtspecial <= dtto):
-        # stworking.add(dtspecial)
+    # if (dtspecial >= dtfrom and dtspecial <= dtto):
+    # stworking.add(dtspecial)
 
     return sorted(stworking)

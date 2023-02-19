@@ -1,11 +1,8 @@
-autopep8==1.4.4
 bs4==0.0.1
 Click==7.0
-lxml==4.3.4
-pandas==0.24.2
-pipdeptree==2.2.0
-pyjsparser==2.7.1
-Sphinx==2.1.2
-sphinxcontrib-websupport==1.1.2
-typing==3.7.4
-wheel==0.36.2
+pandas~=1.5.3
+python-dateutil~=2.8.2
+beautifulsoup4~=4.7.1
+requests~=2.22.0
+numpy~=1.22.0
+six~=1.12.0

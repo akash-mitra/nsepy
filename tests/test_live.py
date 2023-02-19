@@ -1,21 +1,10 @@
 import datetime
 import unittest
-import json
-import pdb
-import requests
-import six
 
-from bs4 import BeautifulSoup
-
-from tests import htmls
-from nsepy.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url
-from nsepy.live import get_quote, get_futures_chain_table, get_holidays_list, isworkingday, nextworkingday, previousworkingday, getworkingdays
-import nsepy.urls as urls
-from nsepy.commons import (is_index, is_index_derivative,
-                           NSE_INDICES, INDEX_DERIVATIVES,
-                           ParseTables, StrDate, unzip_str,
-                           ThreadReturns, URLFetch)
 from nsepy import get_expiry_date
+from nsepy.live import get_quote, get_futures_chain_table, get_holidays_list, isworkingday, nextworkingday, \
+    previousworkingday, getworkingdays
+from tests.test_urls import TestUrls
 
 
 class TestLiveUrls(unittest.TestCase):
@@ -60,6 +49,7 @@ class TestLiveUrls(unittest.TestCase):
         exp = min([x for x in stexp if x > n.date()])
         q = get_quote(symbol='SBIN', instrument='OPTSTK',
                       expiry=exp, option_type="CE", strike=300)
+        # print(q)
         comp_name = q['data'][0]['instrumentType']
         self.assertEqual(comp_name, "OPTSTK")
 

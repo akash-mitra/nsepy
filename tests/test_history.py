@@ -4,16 +4,15 @@ Created on Tue Nov 24 21:57:53 2015
 
 @author: Swapnil Jariwala
 """
-from nsepy.history import validate_params, get_price_list, get_indices_price_list
-from nsepy.urls import get_symbol_count
-from nsepy import urls
-from nsepy import history
-from nsepy.nselist import nse_to_icici
-from nsepy import get_expiry_date
 import unittest
 from datetime import date
+
 import six
-import pdb
+
+from nsepy import get_expiry_date
+from nsepy import history
+from nsepy import urls
+from nsepy.history import validate_params, get_price_list, get_indices_price_list
 
 
 class TestHistory(unittest.TestCase):

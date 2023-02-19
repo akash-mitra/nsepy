@@ -53,7 +53,6 @@ OPTION_HEADERS = ['Symbol', 'Date', 'Expiry', 'Option Type', 'Strike Price',
 OPTION_SCALING = {"Turnover": 100000,
                   "Premium Turnover": 100000}
 
-
 INDEX_SCHEMA = [dd_mmm_yyyy,
                 float, float, float, float,
                 int, float]
@@ -118,7 +117,7 @@ def get_history(symbol, start, end, index=False, futures=False, option_type="",
     """
     frame = inspect.currentframe()
     args, _, _, kwargs = inspect.getargvalues(frame)
-    del(kwargs['frame'])
+    del (kwargs['frame'])
     start = kwargs['start']
     end = kwargs['end']
     if (end - start) > timedelta(130):
@@ -265,7 +264,7 @@ def validate_params(symbol, start, end, index=False, futures=False, option_type=
 def get_index_pe_history(symbol, start, end):
     frame = inspect.currentframe()
     args, _, _, kwargs = inspect.getargvalues(frame)
-    del(kwargs['frame'])
+    del (kwargs['frame'])
     start = kwargs['start']
     end = kwargs['end']
     if (end - start) > timedelta(130):
@@ -324,10 +323,10 @@ def get_price_list(dt, series='EQ'):
     txt = unzip_str(res.content)
     fp = six.StringIO(txt)
     df = pd.read_csv(fp)
-    
-    #Delete column Unnamed: 13 if exits
-    if 'Unnamed: 13' in df.columns :
-      df = df.drop(columns=['Unnamed: 13'])
+
+    # Delete column Unnamed: 13 if exits
+    if 'Unnamed: 13' in df.columns:
+        df = df.drop(columns=['Unnamed: 13'])
     return df[df['SERIES'] == series]
 
 
@@ -355,7 +354,8 @@ def get_delivery_position(dt, segment='EQ'):
 
     # Skip the initial lines till we get to the actual data
 
-    df = pd.read_csv(fp, names=["RECORD TYPE", "SR NO", "SYMBOL", "SEGMENT", "TRADE VOLUME", "TOTDELQTY", "PCT DEL TO TRADE"],
+    df = pd.read_csv(fp, names=["RECORD TYPE", "SR NO", "SYMBOL", "SEGMENT", "TRADE VOLUME", "TOTDELQTY",
+                                "PCT DEL TO TRADE"],
                      header=None, skiprows=4,
                      usecols=["SYMBOL", "SEGMENT", "TRADE VOLUME",
                               "TOTDELQTY", "PCT DEL TO TRADE"]
@@ -393,7 +393,7 @@ def get_indices_price_list(dt):
 def get_rbi_ref_history(start, end):
     frame = inspect.currentframe()
     args, _, _, kwargs = inspect.getargvalues(frame)
-    del(kwargs['frame'])
+    del (kwargs['frame'])
     start = kwargs['start']
     end = kwargs['end']
     if (end - start) > timedelta(130):

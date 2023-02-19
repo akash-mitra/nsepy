@@ -5,16 +5,17 @@ Created on Thu Nov 19 20:35:13 2015
 @author: SW274998
 """
 
-from nsepy.commons import URLFetch
-from requests import Session
 from functools import partial
-from nsepy.constants import symbol_count, symbol_list
 
+from requests import Session
+
+from nsepy.commons import URLFetch
+from nsepy.constants import symbol_count
 
 session = Session()
 # headers = {
-    # 'Host': 'www1.nseindia.com',
-    # 'Referer': 'https://www1.nseindia.com/products/content/equities/equities/eq_security.htm'}
+# 'Host': 'www1.nseindia.com',
+# 'Referer': 'https://www1.nseindia.com/products/content/equities/equities/eq_security.htm'}
 
 headers = {'Accept': '*/*',
            'Accept-Encoding': 'gzip, deflate, sdch, br',
@@ -28,7 +29,6 @@ URLFetchSession = partial(URLFetch, session=session,
                           headers=headers)
 
 NSE_SYMBOL_COUNT_URL = 'http://www1.nseindia.com/marketinfo/sym_map/symbolCount.jsp'
-
 
 """
 ---------------------------------EQUITY--------------------------------------
@@ -84,13 +84,11 @@ daily_volatility_url = URLFetchSession(
 daily_deliverypositions_url = URLFetchSession(
     url='https://www1.nseindia.com/archives/equities/mto/MTO_%s.DAT')
 
-
 """
 1. ddmmyy
 """
 pr_price_list_zipped_url = URLFetchSession(
     url='http://www1.nseindia.com/archives/equities/bhavcopy/pr/PR%s.zip')
-
 
 """
 --------------------------INDICES---------------------------------------
@@ -157,9 +155,10 @@ symbolCount=
 derivative_history_url = partial(
     URLFetchSession(
         url='http://www1.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp?',
-        headers = {**headers, **{'Referer': 'https://www1.nseindia.com/products/content/derivatives/equities/historical_fo.htm'}}
-        #headers = (lambda a,b: a.update(b) or a)(headers.copy(),{'Referer': 'https://www1.nseindia.com/products/content/derivatives/equities/historical_fo.htm'})
-        ),
+        # headers={**headers, **{'Referer': 'https://www1.nseindia.com/products/content/derivatives/equities/historical_fo.htm'}}
+        headers=(lambda a, b: a.update(b) or a)(headers.copy(), {
+            'Referer': 'https://www1.nseindia.com/products/content/derivatives/equities/historical_fo.htm'})
+    ),
     segmentLink=9,
     symbolCount='')
 """
@@ -171,7 +170,6 @@ http://www1.nseindia.com/content/historical/DERIVATIVES/2015/NOV/fo18NOV2015bhav
 """
 derivative_price_list_url = URLFetchSession(
     url="http://www1.nseindia.com/content/historical/DERIVATIVES/%s/%s/fo%sbhav.csv.zip")
-
 
 """
 --------------------------CURRENCY---------------------------------------

@@ -1,17 +1,16 @@
+import datetime
+import json
+import unittest
+
+import requests
+import six
+from bs4 import BeautifulSoup
+
 from nsepy.commons import (is_index, is_index_derivative,
                            NSE_INDICES, INDEX_DERIVATIVES,
                            ParseTables, StrDate, unzip_str,
                            ThreadReturns, URLFetch)
-
-import datetime
-import unittest
-from bs4 import BeautifulSoup
 from tests import htmls
-import json
-import requests
-from six.moves.urllib.parse import urlparse
-import nsepy.urls
-import six
 
 
 def text_to_list(text, schema):
@@ -221,7 +220,6 @@ class TestURLFetch(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # unittest.main()
 
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCommons)
     result = unittest.TextTestRunner(verbosity=2).run(suite)

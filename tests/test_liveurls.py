@@ -1,20 +1,11 @@
-import datetime
-import unittest
 import json
-import pdb
-import requests
-import six
+import unittest
 
 from bs4 import BeautifulSoup
 
-from tests import htmls
-from nsepy.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url, holiday_list_url
-from nsepy.derivatives import get_expiry_date
 import nsepy.urls as urls
-from nsepy.commons import (is_index, is_index_derivative,
-                           NSE_INDICES, INDEX_DERIVATIVES,
-                           ParseTables, StrDate, unzip_str,
-                           ThreadReturns, URLFetch)
+from nsepy.liveurls import quote_eq_url, quote_derivative_url, futures_chain_url, holiday_list_url
+from tests.test_urls import TestUrls
 
 
 class TestLiveUrls(unittest.TestCase):

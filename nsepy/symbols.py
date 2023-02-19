@@ -1,6 +1,7 @@
-import pandas as pd
 import io
-import re
+
+import pandas as pd
+
 from nsepy.urls import equity_symbol_list_url, index_constituents_url
 
 
@@ -97,7 +98,6 @@ def get_index_name(index):
         # "": ["NIFTY100 Enhanced ESG"],
         "NIFTY100EQUALWEIGHT": ["Nifty100 Equal Weight"],
         # "": ["NIFTY100 ESG"],
-        "NIFTY_MIDCAP_LIQUID15": ["Nifty100 Liquid 15"],
         "NIFTY100LOWVOLATILITY30": ["Nifty100 Low Volatility 30"],
         "NIFTY100QUALITY30": ["NIFTY100 Quality 30"],
         # "NIFTY200QUALITY30": ["NIFTY200 Quality 30"],
