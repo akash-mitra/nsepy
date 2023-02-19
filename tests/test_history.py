@@ -12,7 +12,8 @@ import six
 from nsepy import get_expiry_date
 from nsepy import history
 from nsepy import urls
-from nsepy.history import validate_params, get_price_list, get_indices_price_list
+from nsepy.history import validate_params, get_price_list, get_indices_price_list, \
+    get_currency_derivatives_price_list, get_derivatives_price_list
 
 
 class TestHistory(unittest.TestCase):
@@ -24,12 +25,12 @@ class TestHistory(unittest.TestCase):
         n = date(2021, 11, 1)
         idxexp = get_expiry_date(n.year, n.month, index=True, stock=False)
         self.assertEqual(len(idxexp), 4)
-        self.assertIn( date(2021, 11, 3),idxexp)
-        self.assertIn( date(2021, 11, 11),idxexp)
-        self.assertIn( date(2021, 11, 18),idxexp)
-        self.assertIn( date(2021, 11, 25),idxexp)
+        self.assertIn(date(2021, 11, 3), idxexp)
+        self.assertIn(date(2021, 11, 11), idxexp)
+        self.assertIn(date(2021, 11, 18), idxexp)
+        self.assertIn(date(2021, 11, 25), idxexp)
 
-        self.assertNotIn( date(2021, 11, 23),idxexp)
+        self.assertNotIn(date(2021, 11, 23), idxexp)
 
     def test_validate_params(self):
         # test stock history param validation
@@ -119,13 +120,15 @@ class TestHistory(unittest.TestCase):
 
         # Check Stock Futures and Options
         dfplfo = get_derivatives_price_list(testdate)
-        fut = dfplfo[(dfplfo['SYMBOL'] == 'HDFCBANK') & (dfplfo['EXPIRY_DT'] == '29-Aug-2019') & (dfplfo['OPTION_TYP'] == 'XX')].squeeze()
+        fut = dfplfo[(dfplfo['SYMBOL'] == 'HDFCBANK') & (dfplfo['EXPIRY_DT'] == '29-Aug-2019') & (
+                    dfplfo['OPTION_TYP'] == 'XX')].squeeze()
         self.assertEqual(fut['CLOSE'], 2286.4)
 
-        fut = dfplfo[(dfplfo['SYMBOL'] == 'HDFCBANK') & (dfplfo['EXPIRY_DT'] == '29-Aug-2019') & (dfplfo['OPTION_TYP'] == 'PE') & (dfplfo['STRIKE_PR'] == 2300) ].squeeze()
+        fut = dfplfo[(dfplfo['SYMBOL'] == 'HDFCBANK') & (dfplfo['EXPIRY_DT'] == '29-Aug-2019') & (
+                    dfplfo['OPTION_TYP'] == 'PE') & (dfplfo['STRIKE_PR'] == 2300)].squeeze()
         self.assertEqual(fut['CLOSE'], 52.75)
 
-        ## Check Currency Futures and Options
+        # Check Currency Futures and Options
         currfo, currop = get_currency_derivatives_price_list(testdate)
         currfo = currfo[(currfo['CONTRACT_D'] == 'FUTCUREURINR29-JUL-2019')].squeeze()
         self.assertEqual(currfo['CLOSE_PRIC'], 76.7725)

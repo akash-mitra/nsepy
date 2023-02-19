@@ -5,20 +5,18 @@ Created on Tue Nov 24 21:25:54 2015
 @author: Swapnil Jariwala
 """
 
-from nsepy.urls import *
-import six
-from nsepy.commons import *
-from nsepy.constants import *
-from datetime import date, timedelta
-from bs4 import BeautifulSoup
-from simpledbf import Dbf5
-import pandas as pd
-import six
 import inspect
 import io
-import pdb
 import os
 import shutil
+from datetime import timedelta
+
+from bs4 import BeautifulSoup
+from simpledbf import Dbf5
+
+from nsepy.commons import *
+from nsepy.constants import *
+from nsepy.urls import *
 
 dd_mmm_yyyy = StrDate.default_format(format="%d-%b-%Y")
 dd_mm_yyyy = StrDate.default_format(format="%d-%m-%Y")
@@ -164,15 +162,15 @@ def url_to_df(url, params, schema, headers, scaling={}):
 def validate_params(symbol, start, end, index=False, futures=False, option_type="",
                     expiry_date=None, strike_price="", series='EQ'):
     """
-                symbol = "SBIN" (stock name, index name and VIX)
-                start = date(yyyy,mm,dd)
-                end = date(yyyy,mm,dd)
-                index = True, False (True even for VIX)
-                ---------------
-                futures = True, False
-                option_type = "CE", "PE", "CA", "PA"
-                strike_price = integer number
-                expiry_date = date(yyyy,mm,dd)
+        symbol = "SBIN" (stock name, index name and VIX)
+        start = date(yyyy,mm,dd)
+        end = date(yyyy,mm,dd)
+        index = True, False (True even for VIX)
+        ---------------
+        futures = True, False
+        option_type = "CE", "PE", "CA", "PA"
+        strike_price = integer number
+        expiry_date = date(yyyy,mm,dd)
     """
 
     params = {}
@@ -333,12 +331,10 @@ def get_price_list(dt, series='EQ'):
     return df[df['SERIES'] == series]
 
 
-"""
-Get Trade and Delivery Volume for each stock (cash/spot). (a.k.a EQ Bhav copy)
-"""
-
-
 def get_delivery_position(dt, segment='EQ'):
+    """
+    Get Trade and Delivery Volume for each stock (cash/spot). (a.k.a EQ Bhav copy)
+    """
     MMM = dt.strftime("%b").upper()
     yyyy = dt.strftime("%Y")
 
@@ -368,11 +364,11 @@ def get_delivery_position(dt, segment='EQ'):
 
     return df
 
-"""
-Get Trade and Open Interest for each stock futures and options. (a.k.a FO Bhav copy)
-"""
 
 def get_derivatives_price_list(dt):
+    """
+    Get Trade and Open Interest for each stock futures and options. (a.k.a FO Bhav copy)
+    """
     MMM = dt.strftime("%b").upper()
     yyyy = dt.strftime("%Y")
 
@@ -387,16 +383,14 @@ def get_derivatives_price_list(dt):
     df = pd.read_csv(fp)
     return df
 
-"""
-Get Trade and Open Interest for each currency futures and options. (a.k.a Currency Bhav copy)
-"""
 
 def get_currency_derivatives_price_list(dt):
-    '''
+    """
+    Get Trade and Open Interest for each currency futures and options. (a.k.a Currency Bhav copy)
     Returns:
         1. pandas.DataFrame : Currency futures price list pandas dataframe object
         2. pandas.DataFrame : Currency options price list pandas dataframe object
-    '''
+    """
 
     day = str(dt.day).zfill(2)
     month = str(dt.month).zfill(2)
@@ -407,7 +401,7 @@ def get_currency_derivatives_price_list(dt):
     2. MM
     3. yy
     """
-    res = price_list_url_curr(day,month,year)
+    res = price_list_url_curr(day, month, year)
     zip_file = zipfile.ZipFile(io.BytesIO(res.content))
     zip_file_contents = sorted(zip_file.namelist())
 
@@ -427,16 +421,14 @@ def get_currency_derivatives_price_list(dt):
     elif currency_futures_filename.endswith(".csv"):
         currency_futures_df = pd.read_csv(zip_file.open(currency_futures_filename))
         currency_options_df = pd.read_csv(zip_file.open(currency_options_filename))
-    
+
     return (currency_futures_df, currency_options_df)
 
 
-"""
-Get Price range for all Indices
-"""
-
-
 def get_indices_price_list(dt):
+    """
+    Get Price range for all Indices
+    """
     res = index_daily_snapshot_url(dt.strftime("%d%m%Y"))
     df = pd.read_csv(io.StringIO(res.content.decode('utf-8')))
     df = df.rename(columns={"Index Name": "NAME",
@@ -495,4 +487,3 @@ def get_rbi_ref_history_quanta(start, end):
                      headers=RBI_REF_RATE_HEADERS, index="Date")
     df = tp.get_df()
     return df
-
