@@ -4,28 +4,17 @@ Created on Thu Nov 19 20:52:33 2015
 
 @author: SW274998
 """
-import pdb
-from nsepy.commons import (is_index, is_index_derivative,
-                           NSE_INDICES, INDEX_DERIVATIVES,
-                           ParseTables, StrDate, unzip_str,
-                           ThreadReturns, URLFetch)
-import datetime
 import unittest
-from bs4 import BeautifulSoup
-from tests import htmls
-import json
-import requests
+
 import six
+
+from nsepy.commons import (unzip_str)
 from nsepy.urls import *
-import nsepy.urls as urls
-from six.moves.urllib.parse import urlparse
 
 
 class TestUrls(unittest.TestCase):
     def setUp(self):
-        proxy_on = False
-        if proxy_on:
-            urls.session.proxies.update({'http': 'proxy1.wipro.com:8080'})
+        pass
 
     def runTest(self):
         for key in TestUrls.__dict__.keys():

@@ -5,17 +5,18 @@ Created on Tue Nov 24 21:25:54 2015
 @author: Swapnil Jariwala
 """
 
-from nsepy.urls import *
-import six
-from nsepy.commons import *
-from nsepy.constants import *
-from datetime import date, timedelta
-from bs4 import BeautifulSoup
-import pandas as pd
-import six
 import inspect
 import io
-import pdb
+import os
+import shutil
+from datetime import timedelta
+
+from bs4 import BeautifulSoup
+from simpledbf import Dbf5
+
+from nsepy.commons import *
+from nsepy.constants import *
+from nsepy.urls import *
 
 dd_mmm_yyyy = StrDate.default_format(format="%d-%b-%Y")
 dd_mm_yyyy = StrDate.default_format(format="%d-%m-%Y")
@@ -52,7 +53,6 @@ OPTION_HEADERS = ['Symbol', 'Date', 'Expiry', 'Option Type', 'Strike Price',
                   'Premium Turnover', 'Open Interest', 'Change in OI', 'Underlying']
 OPTION_SCALING = {"Turnover": 100000,
                   "Premium Turnover": 100000}
-
 
 INDEX_SCHEMA = [dd_mmm_yyyy,
                 float, float, float, float,
@@ -100,7 +100,7 @@ def get_history(symbol, start, end, index=False, futures=False, option_type="",
             symbol (str): Symbol for stock, index or any security
             start (datetime.date): start date
             end (datetime.date): end date
-            index (boolean): False by default, True if its a index
+            index (boolean): False by default, True if it's an index
             futures (boolean): False by default, True for index and stock futures
             expiry_date (datetime.date): Expiry date for derivatives, Compulsory for futures and options
             option_type (str): It takes "CE", "PE", "CA", "PA" for European and American calls and puts
@@ -118,7 +118,7 @@ def get_history(symbol, start, end, index=False, futures=False, option_type="",
     """
     frame = inspect.currentframe()
     args, _, _, kwargs = inspect.getargvalues(frame)
-    del(kwargs['frame'])
+    del (kwargs['frame'])
     start = kwargs['start']
     end = kwargs['end']
     if (end - start) > timedelta(130):
@@ -162,15 +162,15 @@ def url_to_df(url, params, schema, headers, scaling={}):
 def validate_params(symbol, start, end, index=False, futures=False, option_type="",
                     expiry_date=None, strike_price="", series='EQ'):
     """
-                symbol = "SBIN" (stock name, index name and VIX)
-                start = date(yyyy,mm,dd)
-                end = date(yyyy,mm,dd)
-                index = True, False (True even for VIX)
-                ---------------
-                futures = True, False
-                option_type = "CE", "PE", "CA", "PA"
-                strike_price = integer number
-                expiry_date = date(yyyy,mm,dd)
+        symbol = "SBIN" (stock name, index name and VIX)
+        start = date(yyyy,mm,dd)
+        end = date(yyyy,mm,dd)
+        index = True, False (True even for VIX)
+        ---------------
+        futures = True, False
+        option_type = "CE", "PE", "CA", "PA"
+        strike_price = integer number
+        expiry_date = date(yyyy,mm,dd)
     """
 
     params = {}
@@ -265,7 +265,7 @@ def validate_params(symbol, start, end, index=False, futures=False, option_type=
 def get_index_pe_history(symbol, start, end):
     frame = inspect.currentframe()
     args, _, _, kwargs = inspect.getargvalues(frame)
-    del(kwargs['frame'])
+    del (kwargs['frame'])
     start = kwargs['start']
     end = kwargs['end']
     if (end - start) > timedelta(130):
@@ -324,16 +324,17 @@ def get_price_list(dt, series='EQ'):
     txt = unzip_str(res.content)
     fp = six.StringIO(txt)
     df = pd.read_csv(fp)
-    del df['Unnamed: 13']
+
+    # Delete column Unnamed: 13 if exits
+    if 'Unnamed: 13' in df.columns:
+        df = df.drop(columns=['Unnamed: 13'])
     return df[df['SERIES'] == series]
 
 
-"""
-Get Trade and Delivery Volume for each stock
-"""
-
-
 def get_delivery_position(dt, segment='EQ'):
+    """
+    Get Trade and Delivery Volume for each stock (cash/spot). (a.k.a EQ Bhav copy)
+    """
     MMM = dt.strftime("%b").upper()
     yyyy = dt.strftime("%Y")
 
@@ -352,7 +353,8 @@ def get_delivery_position(dt, segment='EQ'):
 
     # Skip the initial lines till we get to the actual data
 
-    df = pd.read_csv(fp, names=["RECORD TYPE", "SR NO", "SYMBOL", "SEGMENT", "TRADE VOLUME", "TOTDELQTY", "PCT DEL TO TRADE"],
+    df = pd.read_csv(fp, names=["RECORD TYPE", "SR NO", "SYMBOL", "SEGMENT", "TRADE VOLUME", "TOTDELQTY",
+                                "PCT DEL TO TRADE"],
                      header=None, skiprows=4,
                      usecols=["SYMBOL", "SEGMENT", "TRADE VOLUME",
                               "TOTDELQTY", "PCT DEL TO TRADE"]
@@ -363,12 +365,70 @@ def get_delivery_position(dt, segment='EQ'):
     return df
 
 
-"""
-Get Price range for all Indices
-"""
+def get_derivatives_price_list(dt):
+    """
+    Get Trade and Open Interest for each stock futures and options. (a.k.a FO Bhav copy)
+    """
+    MMM = dt.strftime("%b").upper()
+    yyyy = dt.strftime("%Y")
+
+    """
+    1. YYYY
+    2. MMM
+    3. ddMMMyyyy
+    """
+    res = price_list_url_fo(yyyy, MMM, dt.strftime("%d%b%Y").upper())
+    txt = unzip_str(res.content)
+    fp = six.StringIO(txt)
+    df = pd.read_csv(fp)
+    return df
+
+
+def get_currency_derivatives_price_list(dt):
+    """
+    Get Trade and Open Interest for each currency futures and options. (a.k.a Currency Bhav copy)
+    Returns:
+        1. pandas.DataFrame : Currency futures price list pandas dataframe object
+        2. pandas.DataFrame : Currency options price list pandas dataframe object
+    """
+
+    day = str(dt.day).zfill(2)
+    month = str(dt.month).zfill(2)
+    year = dt.strftime("%Y")[-2:]
+
+    """
+    1. dd
+    2. MM
+    3. yy
+    """
+    res = price_list_url_curr(day, month, year)
+    zip_file = zipfile.ZipFile(io.BytesIO(res.content))
+    zip_file_contents = sorted(zip_file.namelist())
+
+    currency_futures_filename = [x for x in zip_file_contents if "FO" in x.upper()][0]
+    currency_options_filename = [x for x in zip_file_contents if "OP" in x.upper()][0]
+
+    if currency_futures_filename.endswith(".dbf"):
+        # Extracting .dbf file in nsepy directory and deleting it after reading
+        zip_file_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "zip_cache")
+        os.mkdir(zip_file_dir) if not os.path.exists(zip_file_dir) else 0
+        zip_file.extractall(zip_file_dir)
+
+        currency_futures_df = Dbf5(os.path.join(zip_file_dir, currency_futures_filename)).to_dataframe()
+        currency_options_df = Dbf5(os.path.join(zip_file_dir, currency_options_filename)).to_dataframe()
+        shutil.rmtree(zip_file_dir)
+
+    elif currency_futures_filename.endswith(".csv"):
+        currency_futures_df = pd.read_csv(zip_file.open(currency_futures_filename))
+        currency_options_df = pd.read_csv(zip_file.open(currency_options_filename))
+
+    return (currency_futures_df, currency_options_df)
 
 
 def get_indices_price_list(dt):
+    """
+    Get Price range for all Indices
+    """
     res = index_daily_snapshot_url(dt.strftime("%d%m%Y"))
     df = pd.read_csv(io.StringIO(res.content.decode('utf-8')))
     df = df.rename(columns={"Index Name": "NAME",
@@ -390,7 +450,7 @@ def get_indices_price_list(dt):
 def get_rbi_ref_history(start, end):
     frame = inspect.currentframe()
     args, _, _, kwargs = inspect.getargvalues(frame)
-    del(kwargs['frame'])
+    del (kwargs['frame'])
     start = kwargs['start']
     end = kwargs['end']
     if (end - start) > timedelta(130):

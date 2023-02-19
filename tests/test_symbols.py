@@ -1,6 +1,6 @@
 import unittest
-from nsepy.symbols import get_symbol_list, get_index_constituents_list
-import pdb
+
+from nsepy.symbols import get_symbol_list, get_index_constituents_list, get_index_name
 
 
 class TestSymbols(unittest.TestCase):
@@ -26,10 +26,16 @@ class TestSymbols(unittest.TestCase):
         self.assertEqual(df[_sbi].iloc[0].get(
             'Company Name'), "State Bank of India")
         self.assertEqual(df[_sbi].iloc[0].get(
-            'Industry'), "FINANCIAL SERVICES")
+            'Industry').upper(), "FINANCIAL SERVICES")
 
         df = get_index_constituents_list("NIFTYCPSE")
         # Check popular names are in the list
         _oil = df["Symbol"] == "OIL"
         # Check company matches the expected value
         self.assertEqual(df[_oil].iloc[0].get('ISIN Code'), "INE274J01014")
+
+    def test_get_index_name(self):
+        self.assertEqual(get_index_name("NIFTY50"), "Nifty 50")
+        self.assertEqual(get_index_name("NIFTY200"), "Nifty 200")
+        self.assertEqual(get_index_name("NIFTYNEXT50"), "Nifty Next 50")
+        self.assertEqual(get_index_name("NIFTYLARGEMIDCAP250"), "Nifty LargeMidcap 250")

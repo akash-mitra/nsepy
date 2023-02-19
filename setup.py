@@ -1,25 +1,28 @@
-# -*- coding: utf-8 -*-
-"""
-Spyder Editor
+import setuptools
 
-This is a temporary script file.
-"""
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
-from distutils.core import setup
-setup(
-  name = 'nsepy',
-  packages = ['nsepy', 'nsepy.derivatives', 'nsepy.debt'], # this must be the same as the name above
-  version = '0.8',
-  description = 'Library to download financial data in pandas dataframe',
-  author = 'Swapnil Jariwala',
-  author_email = 'sjerry4u@gmail.com',
-  url = 'https://github.com/swapniljariwala/nsepy', # use the URL to the github repo
-  entry_points='''
+setuptools.setup(
+    name='nse-data-reader',
+    packages=['nsepy', 'nsepy.derivatives', 'nsepy.debt'],
+    version='1.0.1',
+    description='Library to read financial data of Indian market from NSE.',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    author='Akash',
+    author_email='akashmitra@gmail.com',
+    url='https://github.com/akash-mitra/nsepy',
+    entry_points='''
     [console_scripts]
     nsecli=nsepy.cli:cli
   ''',
-  download_url = 'https://github.com/swapniljariwala/nsepy/archive/nsepy-v0.8.zip', 
-  install_requires = ['beautifulsoup4', 'requests', 'numpy', 'pandas', 'six', 'click', 'lxml'],
-  keywords = ['testing', 'logging', 'example'], # arbitrary keywords
-  classifiers = [],
+    install_requires=['beautifulsoup4', 'requests', 'numpy', 'pandas', 'six', 'click', 'lxml', 'simpledbf'],
+    keywords=['NIFTY', 'NSE', 'Stock Price'],
+    classifiers=[],
 )
+
+# python setup.py sdist bdist_wheel
+# pip install -e .
+# twine upload --repository testpypi dist/*
+# twine upload dist/*
