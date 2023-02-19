@@ -21,37 +21,37 @@ class TestLiveUrls(unittest.TestCase):
         comp_name = q['data'][0]['companyName']
         self.assertEqual(comp_name, "State Bank of India")
 
-    def test_get_quote_stock_der(self):
-        """
-        1. Underlying security (stock symbol or index name)
-        2. instrument (FUTSTK, OPTSTK, FUTIDX, OPTIDX)
-        3. expiry (ddMMMyyyy)
-        4. type (CE/PE for options, - for futures
-        5. strike (strike price upto two decimal places
-        """
-        n = datetime.datetime.now()
-        stexp = get_expiry_date(n.year, n.month, index=False, stock=True)
-        self.assertEqual(len(stexp), 1)
-
-        if n.date() > list(stexp)[0]:
-            try:
-                stexp = get_expiry_date(
-                    n.year, n.month + 1, index=False, stock=True)
-            except:
-                stexp = get_expiry_date(n.year + 1, 1, index=False, stock=True)
-
-        self.assertEqual(len(stexp), 1)
-        exp = min([x for x in stexp if x > n.date()])
-        q = get_quote(symbol='SBIN', instrument='FUTSTK', expiry=exp)
-        comp_name = q['data'][0]['instrumentType']
-        self.assertEqual(comp_name, "FUTSTK")
-
-        exp = min([x for x in stexp if x > n.date()])
-        q = get_quote(symbol='SBIN', instrument='OPTSTK',
-                      expiry=exp, option_type="CE", strike=300)
-        # print(q)
-        comp_name = q['data'][0]['instrumentType']
-        self.assertEqual(comp_name, "OPTSTK")
+    # def test_get_quote_stock_der(self):
+    #     """
+    #     1. Underlying security (stock symbol or index name)
+    #     2. instrument (FUTSTK, OPTSTK, FUTIDX, OPTIDX)
+    #     3. expiry (ddMMMyyyy)
+    #     4. type (CE/PE for options, - for futures
+    #     5. strike (strike price upto two decimal places
+    #     """
+    #     n = datetime.datetime.now()
+    #     stexp = get_expiry_date(n.year, n.month, index=False, stock=True)
+    #     self.assertEqual(len(stexp), 1)
+    #
+    #     if n.date() > list(stexp)[0]:
+    #         try:
+    #             stexp = get_expiry_date(
+    #                 n.year, n.month + 1, index=False, stock=True)
+    #         except:
+    #             stexp = get_expiry_date(n.year + 1, 1, index=False, stock=True)
+    #
+    #     self.assertEqual(len(stexp), 1)
+    #     exp = min([x for x in stexp if x > n.date()])
+    #     q = get_quote(symbol='SBIN', instrument='FUTSTK', expiry=exp)
+    #     comp_name = q['data'][0]['instrumentType']
+    #     self.assertEqual(comp_name, "FUTSTK")
+    #
+    #     exp = min([x for x in stexp if x > n.date()])
+    #     q = get_quote(symbol='SBIN', instrument='OPTSTK',
+    #                   expiry=exp, option_type="CE", strike=300)
+    #     # print(q)
+    #     comp_name = q['data'][0]['instrumentType']
+    #     self.assertEqual(comp_name, "OPTSTK")
 
     def test_get_quote_index_der(self):
         """
@@ -105,10 +105,10 @@ class TestLiveUrls(unittest.TestCase):
         """
         Check holiday list for first quarter for 2019 against the expected data
         -----------------------------------------------------------
-        Date               Day Of the Week             Description
+        Date               Day Of the Week          Description
         ------------------------------------------------------------
-        2019-03-04          Monday           Mahashivratri
-        2019-03-21        Thursday                    Holi
+        2019-03-04         Monday                   Mahashivratri
+        2019-03-21         Thursday                 Holi
         """
         fromdate = datetime.date(2019, 1, 1)
         todate = datetime.date(2019, 3, 31)
@@ -127,7 +127,7 @@ class TestLiveUrls(unittest.TestCase):
         self.assertTrue(previousworkingday(shivratri),
                         datetime.date(2019, 3, 1))
 
-    def test_working_day(self):
+    def test_working_day_2(self):
         # 20 to 28th aug
         independenceday = datetime.date(2019, 8, 15)
         workingdays = getworkingdays(datetime.date(

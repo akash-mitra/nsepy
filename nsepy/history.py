@@ -100,7 +100,7 @@ def get_history(symbol, start, end, index=False, futures=False, option_type="",
             symbol (str): Symbol for stock, index or any security
             start (datetime.date): start date
             end (datetime.date): end date
-            index (boolean): False by default, True if its a index
+            index (boolean): False by default, True if it's an index
             futures (boolean): False by default, True for index and stock futures
             expiry_date (datetime.date): Expiry date for derivatives, Compulsory for futures and options
             option_type (str): It takes "CE", "PE", "CA", "PA" for European and American calls and puts
