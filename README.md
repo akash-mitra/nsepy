@@ -1,14 +1,6 @@
 # NSE Data Reader
 Python Library to get publicly available data on NSE website ie. stock quotes, historical data, live indices.
 
-
-### Important Disclaimer:
-This library is heavily inspired from [nsepy](https://nsepy.xyz/) library. 
-The only reason I decided to create a separate repository here is because I found that 
-NSEPY is no longer getting updated in a timely manner, and there are number of PRs with useful features 
-and bug-fixes which are not merged to the project for quite some time. 
-By having this separate repo, I will be able to keep the project up-to-date and relevant.
-
 ## Documentation:
 Please see the Usage section below. Reference documentation can also be found [here](https://aksmtr.com/articles/18-the-powerful-python-package-to-read-india-stock-data-from-nse).
 
@@ -159,9 +151,17 @@ Date,      Symbol, Expiry,     Option Type, Strike Price, Open,  High,   Low,   
 2023-02-10,NIFTY,  2023-02-23, CE,          18000.0,      129.1, 129.1,  77.4,   89.2,   87.0,  89.2,         136399,             123361410000.00002,602310000.0,3669300,313650,17856.5
 ```
 
+### Important Disclaimer:
+- This library is heavily inspired and originally forked from [nsepy](https://nsepy.xyz/) library. 
+The only reason I decided to create a separate repository here is because I found that 
+NSEPY is no longer getting updated in a timely manner, and there are number of PRs with useful features 
+and bug-fixes which are not merged to the project for quite some time. 
+By having this separate repo, I will be able to keep the project up-to-date and relevant.
+- Use this library at your own risk. The author has no liability whatsoever of any financial or reputation loss you may encounter directly or indirectly from using this library.
+- This library is provided for education use only. 
 
 ## FAQ
-###Is this Legal to get this Data?
+### Is this Legal to get this Data?
 
 The data obtained by this Python Library is already available publicly in NSE website. Anyone can visit the website and download this data. This code only provides an easy-to-use wrapper for using this data. It is completely legal.
 

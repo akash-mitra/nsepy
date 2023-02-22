@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name='nse-data-reader',
     packages=['nsepy', 'nsepy.derivatives', 'nsepy.debt'],
-    version='1.0.1',
+    version='1.0.2',
     description='Library to read financial data of Indian market from NSE.',
     long_description=long_description,
     long_description_content_type="text/markdown",
